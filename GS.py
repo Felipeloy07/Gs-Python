@@ -1,3 +1,7 @@
+# RM 570720 Gustavo Maciel
+# RM 569922 Andrey Durante
+# RM 573450 Fabricio
+# RM 573404 Felipe Eloy
 # =============================================================
 #   ORBCITY — Dados Orbitais para Cidades Inteligentes
 #   Global Solution 2025 | Felipe · Fabrício · Gustavo · Andrey
@@ -36,7 +40,7 @@ def cabecalho(titulo):
 
 def pausar():
     print()
-    input("  Pressione ENTER para voltar ao menu...")
+    input("  Pressione ENTER para voltar ao menu")
 
 def carregando(mensagem="  Carregando", repeticoes=3):
     print(mensagem, end="", flush=True)
