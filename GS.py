@@ -2,342 +2,414 @@
 # RM 569922 Andrey Durante
 # RM 573450 Fabricio
 # RM 573404 Felipe Eloy
+ 
 # =============================================================
 #   ORBCITY — Dados Orbitais para Cidades Inteligentes
 #   Global Solution 2025 | Felipe · Fabrício · Gustavo · Andrey
 # =============================================================
-
+ 
 import time
-import os
-
-# ─── Dados simulados ─────────────────────────────────────────
-
+ 
+# ─── Dados das regiões ───────────────────────────────────────
+# Cada região é um dicionário com nome, cobertura verde, risco e temperatura
+ 
 regioes = [
     {"nome": "Zona Norte",  "cobertura_verde": 18.5, "risco_enchente": "Alto",    "temp_media": 32.1},
     {"nome": "Zona Sul",    "cobertura_verde": 34.2, "risco_enchente": "Baixo",   "temp_media": 28.4},
-    {"nome": "Zona Leste",  "cobertura_verde": 12.0, "risco_enchente": "Crítico", "temp_media": 34.7},
-    {"nome": "Zona Oeste",  "cobertura_verde": 27.8, "risco_enchente": "Médio",   "temp_media": 30.2},
+    {"nome": "Zona Leste",  "cobertura_verde": 12.0, "risco_enchente": "Critico", "temp_media": 34.7},
+    {"nome": "Zona Oeste",  "cobertura_verde": 27.8, "risco_enchente": "Medio",   "temp_media": 30.2},
     {"nome": "Centro",      "cobertura_verde":  8.3, "risco_enchente": "Alto",    "temp_media": 35.9},
 ]
-
+ 
+# Lista de alertas — começa vazia e vai sendo preenchida pelo usuário
 alertas_ativos = []
-historico_monitoramento = []
-
-# ─── Utilitários visuais ─────────────────────────────────────
-
-def limpar():
-    os.system("cls" if os.name == "nt" else "clear")
-
-def linha(char="─", tam=55):
-    print(char * tam)
-
-def cabecalho(titulo):
-    limpar()
-    linha("═")
-    print(f"  🛰️  ORBCITY  |  {titulo}")
-    linha("═")
-    print()
-
+ 
+ 
+# ─── Funções auxiliares ──────────────────────────────────────
+ 
+def linha():
+    print("=" * 50)
+ 
 def pausar():
+    input("\nPressione ENTER para voltar ao menu...")
+ 
+def icone_risco(risco):
+    if risco == "Critico":
+        return "[CRITICO]"
+    elif risco == "Alto":
+        return "[ALTO]"
+    elif risco == "Medio":
+        return "[MEDIO]"
+    elif risco == "Baixo":
+        return "[BAIXO]"
+    else:
+        return "[?]"
+ 
+ 
+# ─── Tela de boas-vindas ─────────────────────────────────────
+ 
+def boas_vindas():
     print()
-    input("  Pressione ENTER para voltar ao menu")
-
-def carregando(mensagem="  Carregando", repeticoes=3):
-    print(mensagem, end="", flush=True)
-    for _ in range(repeticoes):
+    linha()
+    print("   Bem-vindo ao ORBCITY")
+    linha()
+    print()
+    print("  Ola! Fico feliz em ter voce aqui.")
+    print()
+    print("  O OrbCity usa imagens de satelite para monitorar")
+    print("  cidades em tempo real: enchentes, calor urbano")
+    print("  e muito mais.")
+    print()
+    print("  Carregando o sistema", end="")
+    for i in range(4):
+        time.sleep(0.4)
+        print(".", end="", flush=True)
+    print(" Pronto!")
+    time.sleep(0.5)
+ 
+ 
+# ─── OPÇÃO 1 — Sobre o sistema ───────────────────────────────
+ 
+def descricao_solucao():
+    print()
+    linha()
+    print("   SOBRE O SISTEMA")
+    linha()
+    print()
+    print("  A OrbCity e uma plataforma de inteligencia urbana")
+    print("  que usa dados de satelites para monitorar cidades.")
+    print()
+    print("  O sistema analisa:")
+    print("   - Risco de enchentes")
+    print("   - Cobertura vegetal")
+    print("   - Ilhas de calor urbano")
+    print()
+    linha()
+    print("  Equipe  : Felipe, Fabricio, Gustavo, Andrey")
+    print("  Tema    : Industria Espacial + Cidades Inteligentes")
+    print("  Versao  : 1.0 — Global Solution 2025")
+    linha()
+    pausar()
+ 
+ 
+# ─── OPÇÃO 2 — Monitorar regiões ─────────────────────────────
+ 
+def monitorar_regioes():
+    print()
+    linha()
+    print("   MONITORAMENTO DE REGIOES")
+    linha()
+    print()
+    print("  Buscando dados orbitais mais recentes...")
+    time.sleep(1)
+    print()
+    print(f"  {'Regiao':<14} {'Verde':>7}  {'Risco':<10}  {'Temp'}")
+    print("  " + "-" * 44)
+ 
+    total_verde = 0
+ 
+    for regiao in regioes:
+        nome = regiao["nome"]
+        verde = regiao["cobertura_verde"]
+        risco = regiao["risco_enchente"]
+        temp = regiao["temp_media"]
+        icone = icone_risco(risco)
+ 
+        print(f"  {nome:<14} {verde:>6.1f}%  {icone:<10}  {temp:.1f}C")
+ 
+        total_verde = total_verde + verde
+ 
+    media_verde = total_verde / len(regioes)
+ 
+    print()
+    linha()
+    print(f"  Total de regioes monitoradas : {len(regioes)}")
+    print(f"  Media de cobertura verde     : {media_verde:.1f}%")
+    pausar()
+ 
+ 
+# ─── OPÇÃO 3 — Analisar risco de enchente ────────────────────
+ 
+def analisar_risco():
+    print()
+    linha()
+    print("   ANALISE DE RISCO DE ENCHENTE")
+    linha()
+    print()
+    print("  Escolha uma regiao para analisar:\n")
+ 
+    for i in range(len(regioes)):
+        regiao = regioes[i]
+        icone = icone_risco(regiao["risco_enchente"])
+        print(f"  {i + 1}. {regiao['nome']}  {icone}")
+ 
+    print()
+    entrada = input("  Digite o numero da regiao (ou 0 para voltar): ")
+ 
+    if entrada == "0":
+        print("\n  Voltando ao menu...")
+        time.sleep(1)
+        return
+ 
+    # Verifica se a entrada e valida
+    if not entrada.isdigit():
+        print("\n  Entrada invalida! Digite um numero.")
+        time.sleep(1)
+        return
+ 
+    numero = int(entrada)
+ 
+    if numero < 1 or numero > len(regioes):
+        print("\n  Numero fora do intervalo valido.")
+        time.sleep(1)
+        return
+ 
+    # Pega a regiao escolhida (indice começa em 0, por isso subtraimos 1)
+    regiao = regioes[numero - 1]
+    risco = regiao["risco_enchente"]
+ 
+    print()
+    print(f"  Analisando {regiao['nome']}...")
+    time.sleep(1)
+    print()
+    linha()
+    print(f"  Regiao         : {regiao['nome']}")
+    print(f"  Risco enchente : {icone_risco(risco)} {risco}")
+    print(f"  Cobertura verde: {regiao['cobertura_verde']}%")
+    print(f"  Temperatura    : {regiao['temp_media']}C")
+    linha()
+    print()
+ 
+    # Recomendacoes de acordo com o nivel de risco
+    if risco == "Critico":
+        print("  ACAO IMEDIATA NECESSARIA!")
+        print("  Recomendamos acionar a Defesa Civil agora.")
+        print("  Verifique os sistemas de drenagem!")
+        alertas_ativos.append("CRITICO — " + regiao["nome"])
+ 
+    elif risco == "Alto":
+        print("  ATENCAO — situacao preocupante!")
+        print("  Monitore as precipitacoes nas proximas 24h.")
+        alertas_ativos.append("ALTO — " + regiao["nome"])
+ 
+    elif risco == "Medio":
+        print("  SITUACAO MODERADA — fique de olho!")
+        print("  Acompanhe os dados diariamente.")
+ 
+    elif risco == "Baixo":
+        print("  TUDO CERTO POR AQUI!")
+        print("  Nenhuma acao necessaria no momento.")
+ 
+    pausar()
+ 
+ 
+# ─── OPÇÃO 4 — Emitir alerta ─────────────────────────────────
+ 
+def emitir_alerta():
+    print()
+    linha()
+    print("   EMISSAO DE ALERTA ORBITAL")
+    linha()
+    print()
+    print("  Preencha as informacoes abaixo:\n")
+ 
+    regiao = input("  Nome da regiao afetada: ").strip()
+ 
+    if regiao == "":
+        print("\n  Campo obrigatorio! Tente novamente.")
+        time.sleep(1)
+        return
+ 
+    print()
+    print("  Tipo de situacao:")
+    print("  1 - Enchente")
+    print("  2 - Calor extremo")
+    print("  3 - Desmatamento detectado")
+    print("  4 - Outro")
+    print()
+ 
+    tipo_num = input("  Escolha o tipo (1-4): ").strip()
+ 
+    if tipo_num == "1":
+        tipo = "Enchente"
+    elif tipo_num == "2":
+        tipo = "Calor extremo"
+    elif tipo_num == "3":
+        tipo = "Desmatamento detectado"
+    elif tipo_num == "4":
+        tipo = "Outro"
+    else:
+        print("\n  Opcao invalida!")
+        time.sleep(1)
+        return
+ 
+    print()
+    print("  Nivel de gravidade: Baixo / Medio / Alto / Critico")
+    nivel = input("  Nivel: ").strip().capitalize()
+ 
+    if nivel not in ["Baixo", "Medio", "Alto", "Critico"]:
+        print("\n  Nivel invalido! Use: Baixo, Medio, Alto ou Critico.")
+        time.sleep(1)
+        return
+ 
+    alerta = icone_risco(nivel) + " [" + nivel + "] " + tipo + " — " + regiao
+    alertas_ativos.append(alerta)
+ 
+    print()
+    print("  Registrando alerta", end="")
+    for i in range(3):
         time.sleep(0.4)
         print(".", end="", flush=True)
     print()
-    time.sleep(0.3)
-
-def cor_risco(risco):
-    match risco:
-        case "Crítico": return "🔴"
-        case "Alto":    return "🟠"
-        case "Médio":   return "🟡"
-        case "Baixo":   return "🟢"
-        case _:         return "⚪"
-
-# ─── Tela de boas-vindas ─────────────────────────────────────
-
-def boas_vindas():
-    limpar()
-    linha("═")
-    print("  🛰️  Bem-vindo ao ORBCITY")
-    linha("═")
-    print()
-    print("  Olá! Fico feliz em ter você aqui. 😊")
-    print()
-    print("  O OrbCity usa imagens de satélite para monitorar")
-    print("  cidades em tempo real — enchentes, calor urbano")
-    print("  e muito mais, tudo na palma da sua mão.")
-    print()
-    carregando("  Inicializando o sistema")
-    carregando("  Conectando aos satélites")
-    carregando("  Pronto! Carregando o menu")
-    time.sleep(0.3)
-
-# ─── OPÇÃO 1 — Descrição da solução ──────────────────────────
-
-def descricao_solucao():
-    cabecalho("Sobre o Sistema")
-    print("  Oi! Vou te contar um pouco sobre o que é o OrbCity. 🌍")
-    print()
-    print("  A OrbCity é uma plataforma de inteligência urbana que utiliza")
-    print("  dados de satélites (ESA Copernicus e INPE) para monitorar")
-    print("  cidades em tempo real. O sistema analisa risco de enchentes,")
-    print("  cobertura vegetal e ilhas de calor urbano, gerando alertas")
-    print("  automáticos para apoiar decisões de gestores municipais.")
     print()
     linha()
-    print("  👥  Equipe  : Felipe · Fabrício · Gustavo · Andrey")
-    print("  🌐  Tema    : Indústria Espacial + Cidades Inteligentes")
-    print("  🔖  Versão  : 1.0 — Global Solution 2025")
-    linha()
-    print()
-    print("  Qualquer dúvida, fique à vontade para explorar as outras")
-    print("  opções do menu. Estamos aqui para ajudar! 🚀")
-    pausar()
-
-# ─── OPÇÃO 2 — Monitorar regiões ─────────────────────────────
-
-def monitorar_regioes():
-    cabecalho("Monitoramento de Regiões")
-    print("  Vou buscar os dados orbitais mais recentes para você...")
-    print()
-    carregando("  Conectando ao satélite Sentinel-2")
-    carregando("  Processando imagens")
-    print()
-    print(f"  {'Região':<14} {'Verde%':>7} {'Risco Enchente':<16} {'Temp °C':>7}")
-    linha()
-
-    for r in regioes:
-        icone = cor_risco(r["risco_enchente"])
-        print(f"  {r['nome']:<14} {r['cobertura_verde']:>6.1f}%  "
-              f"{icone} {r['risco_enchente']:<13} {r['temp_media']:>6.1f}°C")
-        historico_monitoramento.append(r["nome"])
-
-    linha()
-    media_verde = sum(r["cobertura_verde"] for r in regioes) / len(regioes)
-    print(f"  📡 Total de regiões monitoradas : {len(regioes)}")
-    print(f"  🌿 Média de cobertura verde     : {media_verde:.1f}%")
-    print()
-    print("  Dados atualizados com sucesso! ✅")
-    pausar()
-
-# ─── OPÇÃO 3 — Analisar risco de enchente ────────────────────
-
-def analisar_risco():
-    cabecalho("Análise de Risco de Enchente")
-    print("  Vamos analisar o risco de enchente da região que você escolher.")
-    print("  Selecione uma das opções abaixo:\n")
-
-    for i, r in enumerate(regioes, 1):
-        icone = cor_risco(r["risco_enchente"])
-        print(f"    {i}. {r['nome']}  {icone}")
-    print()
-
-    while True:
-        entrada = input("  Digite o número da região (ou 0 para voltar): ").strip()
-        if entrada == "0":
-            print("\n  Tudo bem! Voltando ao menu principal... 👋")
-            time.sleep(1)
-            return
-        if entrada.isdigit() and 1 <= int(entrada) <= len(regioes):
-            break
-        print("  ⚠️  Hmm, esse número não é válido. Tente novamente!")
-
-    r = regioes[int(entrada) - 1]
-    icone = cor_risco(r["risco_enchente"])
-
-    print()
-    carregando(f"  Analisando dados da {r['nome']}")
-    print()
-    linha()
-    print(f"  📍 Região analisada  : {r['nome']}")
-    print(f"  💧 Risco de enchente : {icone} {r['risco_enchente']}")
-    print(f"  🌿 Cobertura verde   : {r['cobertura_verde']}%")
-    print(f"  🌡️  Temperatura média : {r['temp_media']}°C")
-    linha()
-    print()
-
-    match r["risco_enchente"]:
-        case "Crítico":
-            print("  🚨 AÇÃO IMEDIATA NECESSÁRIA!")
-            print("     Recomendamos acionar a Defesa Civil agora e emitir")
-            print("     alertas à população. Verifique os sistemas de drenagem!")
-            alertas_ativos.append(f"CRÍTICO — {r['nome']}")
-        case "Alto":
-            print("  ⚠️  ATENÇÃO — situação preocupante!")
-            print("     Monitore as precipitações nas próximas 24h e deixe")
-            print("     as equipes de resposta rápida em prontidão.")
-            alertas_ativos.append(f"ALTO — {r['nome']}")
-        case "Médio":
-            print("  ℹ️  SITUAÇÃO MODERADA — fique de olho!")
-            print("     Acompanhe os dados orbitais diariamente.")
-        case "Baixo":
-            print("  ✅  TUDO CERTO POR AQUI!")
-            print("     Nenhuma ação necessária no momento. 😊")
-
-    pausar()
-
-# ─── OPÇÃO 4 — Emitir alerta orbital ─────────────────────────
-
-def emitir_alerta():
-    cabecalho("Emissão de Alerta Orbital")
-    print("  Vamos registrar um novo alerta. Pode me passar as informações:\n")
-
-    while True:
-        regiao = input("  📍 Nome da região afetada : ").strip()
-        if regiao:
-            break
-        print("  ⚠️  Ops! Esse campo é obrigatório. Tente novamente.")
-
-    print()
-    print("  Que tipo de situação está acontecendo?")
-    print("    1 — 💧 Enchente")
-    print("    2 — 🌡️  Calor extremo")
-    print("    3 — 🌳 Desmatamento detectado")
-    print("    4 — ❓ Outro")
-    print()
-
-    while True:
-        tipo_num = input("  Escolha o tipo (1-4): ").strip()
-        if tipo_num in ["1", "2", "3", "4"]:
-            break
-        print("  ⚠️  Por favor, digite um número entre 1 e 4.")
-
-    tipos = {"1": "Enchente", "2": "Calor extremo",
-             "3": "Desmatamento detectado", "4": "Outro"}
-    tipo = tipos[tipo_num]
-
-    print()
-    print("  Qual é a gravidade da situação?")
-    while True:
-        nivel = input("  Nível (Baixo / Médio / Alto / Crítico): ").strip().capitalize()
-        if nivel in ["Baixo", "Médio", "Alto", "Crítico"]:
-            break
-        print("  ⚠️  Digite exatamente: Baixo, Médio, Alto ou Crítico.")
-
-    alerta = f"{cor_risco(nivel)} [{nivel}] {tipo} — {regiao}"
-    alertas_ativos.append(alerta)
-
-    print()
-    carregando("  Registrando alerta no sistema")
-    linha()
-    print("  ✅  Alerta registrado com sucesso!")
-    print(f"  {alerta}")
-    print()
-    print("  Os gestores responsáveis serão notificados. 📢")
+    print("  Alerta registrado com sucesso!")
+    print("  " + alerta)
     linha()
     pausar()
-
+ 
+ 
 # ─── OPÇÃO 5 — Ver alertas ativos ────────────────────────────
-
+ 
 def ver_alertas():
-    cabecalho("Alertas Ativos")
-
-    if not alertas_ativos:
-        print("  Que ótima notícia! 🎉")
-        print("  Não há nenhum alerta ativo no momento.")
-        print("  Todas as regiões estão sob controle. ✅")
+    print()
+    linha()
+    print("   ALERTAS ATIVOS")
+    linha()
+    print()
+ 
+    if len(alertas_ativos) == 0:
+        print("  Nenhum alerta ativo no momento.")
+        print("  Todas as regioes estao sob controle!")
     else:
-        print(f"  Encontrei {len(alertas_ativos)} alerta(s) registrado(s):\n")
-        for i, alerta in enumerate(alertas_ativos, 1):
-            print(f"  {i:>2}. {alerta}")
+        print(f"  Total de alertas: {len(alertas_ativos)}\n")
+ 
+        for i in range(len(alertas_ativos)):
+            print(f"  {i + 1}. {alertas_ativos[i]}")
+ 
+        # Conta alertas criticos
+        criticos = 0
+        for alerta in alertas_ativos:
+            if "CRITICO" in alerta:
+                criticos = criticos + 1
+ 
         print()
         linha()
-
-        criticos = sum(1 for a in alertas_ativos if "CRÍTICO" in a.upper() or "Crítico" in a)
-        altos    = sum(1 for a in alertas_ativos if "ALTO" in a.upper() and "CRÍTICO" not in a.upper())
-        print(f"  🔴 Críticos : {criticos}")
-        print(f"  🟠 Altos    : {altos}")
-        print(f"  📊 Total    : {len(alertas_ativos)}")
-        print()
+        print(f"  Alertas criticos : {criticos}")
+        print(f"  Total geral      : {len(alertas_ativos)}")
+ 
         if criticos > 0:
-            print("  ⚠️  Há alertas críticos! Tome as devidas providências.")
-
+            print()
+            print("  Ha alertas criticos! Tome as devidas providencias.")
+ 
     pausar()
-
+ 
+ 
 # ─── OPÇÃO 6 — Comparar regiões ──────────────────────────────
-
+ 
 def comparar_regioes():
-    cabecalho("Comparação entre Regiões")
-    print("  Aqui você pode ver como cada região se compara às outras.")
-    print("  Dados coletados pelo satélite Sentinel-2 🛰️\n")
-
-    carregando("  Processando comparativo")
-    print()
-
-    ordenadas = sorted(regioes, key=lambda r: r["cobertura_verde"], reverse=True)
-
-    print("  🌿 Ranking de cobertura verde:\n")
-    for i, r in enumerate(ordenadas, 1):
-        barra = "█" * int(r["cobertura_verde"] / 2)
-        print(f"  {i}. {r['nome']:<14} {barra:<20} {r['cobertura_verde']:.1f}%")
-
     print()
     linha()
-
-    mais_quente = max(regioes, key=lambda r: r["temp_media"])
-    mais_verde  = max(regioes, key=lambda r: r["cobertura_verde"])
-    mais_risco  = [r for r in regioes if r["risco_enchente"] == "Crítico"]
-
-    print(f"  🌡️  Região mais quente  : {mais_quente['nome']} ({mais_quente['temp_media']}°C)")
-    print(f"  🌿 Mais área verde    : {mais_verde['nome']} ({mais_verde['cobertura_verde']}%)")
-
-    if mais_risco:
-        nomes = ", ".join(r["nome"] for r in mais_risco)
-        print(f"  🔴 Risco crítico      : {nomes}")
-        print()
-        print("  💡 Dica: Considere priorizar ações nessas regiões!")
-    else:
-        print("  ✅  Nenhuma região em risco crítico no momento.")
-
+    print("   COMPARACAO ENTRE REGIOES")
+    linha()
+    print()
+ 
+    print("  Ranking de cobertura verde:\n")
+ 
+    # Ordenacao simples por cobertura verde (bubble sort)
+    lista = regioes.copy()
+    n = len(lista)
+ 
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if lista[j]["cobertura_verde"] < lista[j + 1]["cobertura_verde"]:
+                lista[j], lista[j + 1] = lista[j + 1], lista[j]
+ 
+    for i in range(len(lista)):
+        regiao = lista[i]
+        barra = "#" * int(regiao["cobertura_verde"] / 2)
+        print(f"  {i + 1}. {regiao['nome']:<14} {barra:<20} {regiao['cobertura_verde']:.1f}%")
+ 
+    print()
+    linha()
+ 
+    # Encontra a mais quente
+    mais_quente = regioes[0]
+    for regiao in regioes:
+        if regiao["temp_media"] > mais_quente["temp_media"]:
+            mais_quente = regiao
+ 
+    # Encontra a mais verde
+    mais_verde = regioes[0]
+    for regiao in regioes:
+        if regiao["cobertura_verde"] > mais_verde["cobertura_verde"]:
+            mais_verde = regiao
+ 
+    print(f"  Regiao mais quente : {mais_quente['nome']} ({mais_quente['temp_media']}C)")
+    print(f"  Mais area verde    : {mais_verde['nome']} ({mais_verde['cobertura_verde']}%)")
+ 
+    # Verifica se existe alguma regiao em risco critico
+    tem_critico = False
+    for regiao in regioes:
+        if regiao["risco_enchente"] == "Critico":
+            print(f"  Risco critico      : {regiao['nome']}")
+            tem_critico = True
+ 
+    if not tem_critico:
+        print("  Nenhuma regiao em risco critico no momento.")
+ 
     pausar()
-
-# ─── MENU PRINCIPAL ──────────────────────────────────────────
-
+ 
+ 
+# ─── Menu principal ──────────────────────────────────────────
+ 
 def menu():
     boas_vindas()
+ 
     while True:
-        cabecalho("Menu Principal")
-        print("  O que você gostaria de fazer hoje? 😊")
-        print()
-        print("  1  —  📖  Sobre o sistema OrbCity")
-        print("  2  —  📡  Monitorar regiões (dados orbitais)")
-        print("  3  —  💧  Analisar risco de enchente")
-        print("  4  —  🚨  Emitir alerta orbital")
-        print("  5  —  🔔  Ver alertas ativos")
-        print("  6  —  📊  Comparar regiões")
-        print("  0  —  👋  Sair")
         print()
         linha()
+        print("   ORBCITY — Menu Principal")
+        linha()
+        print()
+        print("  1 - Sobre o sistema OrbCity")
+        print("  2 - Monitorar regioes (dados orbitais)")
+        print("  3 - Analisar risco de enchente")
+        print("  4 - Emitir alerta orbital")
+        print("  5 - Ver alertas ativos")
+        print("  6 - Comparar regioes")
+        print("  0 - Sair")
+        print()
+        linha()
+ 
         opcao = input("  Digite sua escolha: ").strip()
-        linha()
-
-        match opcao:
-            case "1": descricao_solucao()
-            case "2": monitorar_regioes()
-            case "3": analisar_risco()
-            case "4": emitir_alerta()
-            case "5": ver_alertas()
-            case "6": comparar_regioes()
-            case "0":
-                limpar()
-                print()
-                linha("═")
-                print("  👋  Obrigado por usar o OrbCity!")
-                print("  🛰️  Até a próxima. Cuide-se!")
-                linha("═")
-                print()
-                break
-            case _:
-                print("  🤔  Hmm, não reconheci essa opção.")
-                print("      Digite um número entre 0 e 6, tá bom?")
-                time.sleep(2)
-
-# ─── Entrada do programa ─────────────────────────────────────
-
-if __name__ == "__main__":
-    menu()
+ 
+        if opcao == "1":
+            descricao_solucao()
+        elif opcao == "2":
+            monitorar_regioes()
+        elif opcao == "3":
+            analisar_risco()
+        elif opcao == "4":
+            emitir_alerta()
+        elif opcao == "5":
+            ver_alertas()
+        elif opcao == "6":
+            comparar_regioes()
+        elif opcao == "0":
+            print()
+            linha()
+            print("  Obrigado por usar o OrbCity!")
+            print("  Ate a proxima!")
+            linha()
+            print()
+            break
+        else:
+            print()
+            print("  Opcao invalida! Digite um numero entre 0 e 6.")
+            time.sleep(1.5)
+ 
+ 
+# ─── Inicio do programa ──────────────────────────────────────
+ 
+menu()
